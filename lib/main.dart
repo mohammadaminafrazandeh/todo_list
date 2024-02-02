@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todo_list/edit.dart';
 import 'package:todo_list/model/data.dart';
 
 const taskBoxName = 'tasks';
@@ -75,7 +76,9 @@ class HomeScreen extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) {
-                    return EditTaskScreen();
+                    return EditTaskScreen(
+                      task: TaskEntity(),
+                    );
                   },
                 ),
               );
@@ -288,43 +291,6 @@ class MyCheckBox extends StatelessWidget {
               size: 16,
             )
           : null,
-    );
-  }
-}
-
-class EditTaskScreen extends StatelessWidget {
-  EditTaskScreen({super.key});
-  final TextEditingController _controller = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Task'),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-          label: const Text('Save Changes'),
-          onPressed: () {
-            final task = TaskEntity();
-            task.name = _controller.text;
-            task.priority = Priority.low;
-            if (task.isInBox) {
-              task.save();
-            } else {
-              final Box<TaskEntity> box = Hive.box(taskBoxName);
-              box.add(task);
-            }
-
-            Navigator.of(context).pop();
-          }),
-      body: Column(
-        children: [
-          TextField(
-            controller: _controller,
-            decoration:
-                const InputDecoration(label: Text('Add a task for today...')),
-          ),
-        ],
-      ),
     );
   }
 }
