@@ -13,7 +13,7 @@ void main() async {
   Hive.registerAdapter(PriorityAdapter());
   await Hive.openBox<TaskEntity>(taskBoxName);
   SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarColor: primaryVariantColor));
+      const SystemUiOverlayStyle(statusBarColor: primaryVariantColor));
   runApp(const MyApp());
 }
 
@@ -26,20 +26,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryTextColor = Color(0xff1d2830);
+    const primaryTextColor = Color(0xff1d2830);
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Todo List',
       theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(
-            TextTheme(titleLarge: TextStyle(fontWeight: FontWeight.bold))),
-        inputDecorationTheme: InputDecorationTheme(
+        textTheme: GoogleFonts.poppinsTextTheme(const TextTheme(
+            titleLarge: TextStyle(fontWeight: FontWeight.bold))),
+        inputDecorationTheme: const InputDecorationTheme(
           labelStyle: TextStyle(color: secondaryTextColor),
           prefixIconColor: secondaryTextColor,
           border: InputBorder.none,
         ),
-        colorScheme: ColorScheme.light(
+        colorScheme: const ColorScheme.light(
             primary: primaryColor,
             primaryContainer: primaryVariantColor,
             background: Color(0xfff3f5f8),
@@ -116,7 +116,7 @@ class HomeScreen extends StatelessWidget {
                           )
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 18,
                       ),
                       Container(
@@ -132,7 +132,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: TextField(
+                        child: const TextField(
                           decoration: InputDecoration(
                             prefixIcon: Icon(CupertinoIcons.search),
                             label: Text(
@@ -150,7 +150,7 @@ class HomeScreen extends StatelessWidget {
                     valueListenable: box.listenable(),
                     builder: (context, Box<TaskEntity> box, child) {
                       return ListView.builder(
-                          padding: EdgeInsets.fromLTRB(16, 16, 16, 100),
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                           itemCount: box.values.length + 1,
                           itemBuilder: (context, index) {
                             if (index == 0) {
@@ -168,7 +168,7 @@ class HomeScreen extends StatelessWidget {
                                             .apply(fontSizeFactor: 0.9),
                                       ),
                                       Container(
-                                        margin: EdgeInsets.only(top: 4),
+                                        margin: const EdgeInsets.only(top: 4),
                                         width: 70,
                                         height: 3,
                                         decoration: BoxDecoration(
@@ -246,7 +246,7 @@ class _TaskItemState extends State<TaskItem> {
         child: Row(
           children: [
             MyCheckBox(value: widget.task.isComplete),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Text(
                 widget.task.name,

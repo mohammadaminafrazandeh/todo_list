@@ -7,7 +7,7 @@ import 'package:todo_list/main.dart';
 import 'package:todo_list/model/data.dart';
 
 class EditTaskScreen extends StatefulWidget {
-  EditTaskScreen({
+  const EditTaskScreen({
     Key? key,
     required this.task,
   }) : super(key: key);
@@ -72,7 +72,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       color: primaryColor,
                       isSelected: widget.task.priority == Priority.high,
                     )),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Flexible(
                     flex: 1,
                     child: ProirityCheckBox(
@@ -85,7 +85,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       color: const Color(0xfff09819),
                       isSelected: widget.task.priority == Priority.medium,
                     )),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Flexible(
                     flex: 1,
                     child: ProirityCheckBox(
