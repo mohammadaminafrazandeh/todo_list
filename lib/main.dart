@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list/edit.dart';
@@ -152,64 +153,69 @@ class HomeScreen extends StatelessWidget {
                 child: ValueListenableBuilder<Box<TaskEntity>>(
                     valueListenable: box.listenable(),
                     builder: (context, Box<TaskEntity> box, child) {
-                      return ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                          itemCount: box.values.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Today',
-                                        style: themeData.textTheme.titleLarge!
-                                            .apply(fontSizeFactor: 0.9),
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 4),
-                                        width: 70,
-                                        height: 3,
-                                        decoration: BoxDecoration(
-                                          color: themeData.colorScheme.primary,
-                                          borderRadius:
-                                              BorderRadius.circular(1.5),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  MaterialButton(
-                                    elevation: 0,
-                                    color: const Color(0xffEAEFF5),
-                                    textColor: secondaryTextColor,
-                                    onPressed: () {
-                                      box.clear();
-                                    },
-                                    child: const Row(
+                      if (box.values.isEmpty) {
+                        return const EmptyState();
+                      } else {
+                        return ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                            itemCount: box.values.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text('Delete All'),
-                                        SizedBox(
-                                          width: 4,
+                                        Text(
+                                          'Today',
+                                          style: themeData.textTheme.titleLarge!
+                                              .apply(fontSizeFactor: 0.9),
                                         ),
-                                        Icon(
-                                          CupertinoIcons.delete_solid,
-                                          size: 18,
+                                        Container(
+                                          margin: const EdgeInsets.only(top: 4),
+                                          width: 70,
+                                          height: 3,
+                                          decoration: BoxDecoration(
+                                            color:
+                                                themeData.colorScheme.primary,
+                                            borderRadius:
+                                                BorderRadius.circular(1.5),
+                                          ),
                                         )
                                       ],
                                     ),
-                                  )
-                                ],
-                              );
-                            } else {
-                              final TaskEntity task =
-                                  box.values.toList()[index - 1];
-                              return TaskItem(task: task);
-                            }
-                          });
+                                    MaterialButton(
+                                      elevation: 0,
+                                      color: const Color(0xffEAEFF5),
+                                      textColor: secondaryTextColor,
+                                      onPressed: () {
+                                        box.clear();
+                                      },
+                                      child: const Row(
+                                        children: [
+                                          Text('Delete All'),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Icon(
+                                            CupertinoIcons.delete_solid,
+                                            size: 18,
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                final TaskEntity task =
+                                    box.values.toList()[index - 1];
+                                return TaskItem(task: task);
+                              }
+                            });
+                      }
                     }),
               ),
             ],
@@ -249,6 +255,29 @@ class _TaskItemState extends State<TaskItem> {
         break;
     }
     return InkWell(
+      onLongPress: () {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog.adaptive(
+                  title: const Text('Delete Task'),
+                  content:
+                      const Text('Are you sure you want to delete this task?'),
+                  actions: [
+                    TextButton(
+                      onPressed: Navigator.of(context).pop,
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        widget.task.delete();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Delete'),
+                    )
+                  ]);
+            });
+      },
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return EditTaskScreen(task: widget.task);
@@ -332,5 +361,22 @@ class MyCheckBox extends StatelessWidget {
             : null,
       ),
     );
+  }
+}
+
+class EmptyState extends StatelessWidget {
+  const EmptyState({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      SvgPicture.asset('assets/images/empty_state.svg', width: 120),
+      const SizedBox(
+        height: 20,
+      ),
+      Text(
+        'No tasks yet',
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+    ]);
   }
 }
