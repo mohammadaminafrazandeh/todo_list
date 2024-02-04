@@ -248,9 +248,9 @@ class _TaskItemState extends State<TaskItem> {
     }
     return InkWell(
       onTap: () {
-        setState(() {
-          widget.task.isComplete = !widget.task.isComplete;
-        });
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return EditTaskScreen(task: widget.task);
+        }));
       },
       child: Container(
         margin: const EdgeInsets.only(top: 8),
@@ -262,7 +262,14 @@ class _TaskItemState extends State<TaskItem> {
         ),
         child: Row(
           children: [
-            MyCheckBox(value: widget.task.isComplete),
+            MyCheckBox(
+              value: widget.task.isComplete,
+              onTap: () {
+                setState(() {
+                  widget.task.isComplete = !widget.task.isComplete;
+                });
+              },
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
@@ -295,30 +302,34 @@ class _TaskItemState extends State<TaskItem> {
 
 class MyCheckBox extends StatelessWidget {
   final bool value;
-  const MyCheckBox({super.key, required this.value});
+  final GestureTapCallback onTap;
+  const MyCheckBox({super.key, required this.value, required this.onTap});
   @override
   Widget build(BuildContext context) {
     final ThemeData themeData = Theme.of(context);
-    return Container(
-      width: 24,
-      height: 24,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        border: !value
-            ? Border.all(
-                width: 2,
-                color: secondaryTextColor,
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: !value
+              ? Border.all(
+                  width: 2,
+                  color: secondaryTextColor,
+                )
+              : null,
+          color: value ? primaryColor : null,
+        ),
+        child: value
+            ? Icon(
+                CupertinoIcons.check_mark,
+                color: themeData.colorScheme.onPrimary,
+                size: 16,
               )
             : null,
-        color: value ? primaryColor : null,
       ),
-      child: value
-          ? Icon(
-              CupertinoIcons.check_mark,
-              color: themeData.colorScheme.onPrimary,
-              size: 16,
-            )
-          : null,
     );
   }
 }
