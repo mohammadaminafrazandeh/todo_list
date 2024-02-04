@@ -20,6 +20,9 @@ void main() async {
 const Color primaryColor = Color(0xff794cff);
 const Color primaryVariantColor = Color(0xff5c0aff);
 const Color secondaryTextColor = Color(0xffafbed0);
+const Color normalPriorityColor = Color(0xfff09819);
+const Color lowPriorityColor = Color(0xff3be1f1);
+const Color highPriorityColor = primaryColor;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -214,6 +217,8 @@ class HomeScreen extends StatelessWidget {
 }
 
 class TaskItem extends StatefulWidget {
+  static const double height = 84;
+  static const double borderRadius = 8;
   const TaskItem({
     super.key,
     required this.task,
@@ -229,6 +234,18 @@ class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
     ThemeData themeData = Theme.of(context);
+    final Color priorityColor;
+    switch (widget.task.priority) {
+      case Priority.low:
+        priorityColor = lowPriorityColor;
+        break;
+      case Priority.medium:
+        priorityColor = normalPriorityColor;
+        break;
+      case Priority.high:
+        priorityColor = highPriorityColor;
+        break;
+    }
     return InkWell(
       onTap: () {
         setState(() {
@@ -237,10 +254,10 @@ class _TaskItemState extends State<TaskItem> {
       },
       child: Container(
         margin: const EdgeInsets.only(top: 8),
-        padding: const EdgeInsets.only(left: 16, right: 16),
-        height: 84,
+        padding: const EdgeInsets.only(left: 16),
+        height: TaskItem.height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(TaskItem.borderRadius),
           color: themeData.colorScheme.surface,
         ),
         child: Row(
@@ -257,6 +274,17 @@ class _TaskItemState extends State<TaskItem> {
                         ? TextDecoration.lineThrough
                         : null),
               ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              width: 5,
+              height: TaskItem.height,
+              decoration: BoxDecoration(
+                  color: priorityColor,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(TaskItem.borderRadius),
+                    bottomRight: Radius.circular(TaskItem.borderRadius),
+                  )),
             ),
           ],
         ),

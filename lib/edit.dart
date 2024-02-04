@@ -69,7 +69,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         });
                       },
                       label: 'High',
-                      color: primaryColor,
+                      color: highPriorityColor,
                       isSelected: widget.task.priority == Priority.high,
                     )),
                 const SizedBox(width: 8),
@@ -82,7 +82,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         });
                       },
                       label: 'Normal',
-                      color: const Color(0xfff09819),
+                      color: normalPriorityColor,
                       isSelected: widget.task.priority == Priority.medium,
                     )),
                 const SizedBox(width: 8),
@@ -95,7 +95,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                         });
                       },
                       label: 'Low',
-                      color: const Color(0xff3be1f1),
+                      color: lowPriorityColor,
                       isSelected: widget.task.priority == Priority.low,
                     )),
               ],
