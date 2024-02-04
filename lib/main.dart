@@ -217,7 +217,7 @@ class HomeScreen extends StatelessWidget {
 }
 
 class TaskItem extends StatefulWidget {
-  static const double height = 84;
+  static const double height = 64;
   static const double borderRadius = 8;
   const TaskItem({
     super.key,
@@ -276,7 +276,6 @@ class _TaskItemState extends State<TaskItem> {
                 widget.task.name,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    fontSize: 24,
                     decoration: widget.task.isComplete
                         ? TextDecoration.lineThrough
                         : null),
