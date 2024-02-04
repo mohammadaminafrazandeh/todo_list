@@ -42,14 +42,13 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             ],
           ),
           onPressed: () {
-            final task = TaskEntity();
-            task.name = _controller.text;
-            task.priority = widget.task.priority;
-            if (task.isInBox) {
-              task.save();
+            widget.task.name = _controller.text;
+            widget.task.priority = widget.task.priority;
+            if (widget.task.isInBox) {
+              widget.task.save();
             } else {
               final Box<TaskEntity> box = Hive.box(taskBoxName);
-              box.add(task);
+              box.add(widget.task);
             }
             Navigator.of(context).pop();
           }),
