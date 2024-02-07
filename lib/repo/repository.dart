@@ -1,30 +1,36 @@
+import 'package:flutter/material.dart';
 import 'package:todo_list/source/source.dart';
 
-class Repository<T> implements DataSource<T> {
+class Repository<T> with ChangeNotifier implements DataSource<T> {
   final DataSource<T> localDataSource;
   Repository(this.localDataSource);
   @override
-  Future<T> createOrUpdate(T data) {
-    return localDataSource.createOrUpdate(data);
+  Future<T> createOrUpdate(T data) async {
+    final T result = await localDataSource.createOrUpdate(data);
+    notifyListeners();
+    return result;
   }
 
   @override
-  Future<void> delete(T data) {
-    return localDataSource.delete(data);
+  Future<void> delete(T data) async {
+    await localDataSource.delete(data);
+    notifyListeners();
   }
 
   @override
-  Future<void> deleteAll() {
-    return localDataSource.deleteAll();
+  Future<void> deleteAll() async {
+    await localDataSource.deleteAll();
+    notifyListeners();
   }
 
   @override
-  Future<void> deleteById(id) {
-    return localDataSource.deleteById(id);
+  Future<void> deleteById(id) async {
+    await localDataSource.deleteById(id);
+    notifyListeners();
   }
 
   @override
-  Future<T> findById(id) {
+  Future<T> findById(id) async {
     return localDataSource.findById(id);
   }
 
