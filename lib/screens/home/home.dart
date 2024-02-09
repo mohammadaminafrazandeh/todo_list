@@ -38,93 +38,97 @@ class HomeScreen extends StatelessWidget {
                 ),
               );
             }),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                height: 110,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      themeData.colorScheme.primary,
-                      themeData.colorScheme.primaryContainer,
-                    ],
+        body: BlocProvider<TaskListBloc>(
+          create: (context) =>
+              TaskListBloc(context.read<Repository<TaskEntity>>()),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  height: 110,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        themeData.colorScheme.primary,
+                        themeData.colorScheme.primaryContainer,
+                      ],
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'To Do List',
-                            style: themeData.textTheme.titleLarge!
-                                .apply(color: themeData.colorScheme.onPrimary),
-                          ),
-                          Icon(
-                            CupertinoIcons.share,
-                            color: themeData.colorScheme.onPrimary,
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 18,
-                      ),
-                      Container(
-                        height: 38,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(38 / 2),
-                          color: themeData.colorScheme.onPrimary,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'To Do List',
+                              style: themeData.textTheme.titleLarge!.apply(
+                                  color: themeData.colorScheme.onPrimary),
                             ),
+                            Icon(
+                              CupertinoIcons.share,
+                              color: themeData.colorScheme.onPrimary,
+                            )
                           ],
                         ),
-                        child: TextField(
-                          controller: controller,
-                          onChanged: (value) {
-                            searchKeywordNotifier.value = controller.text;
-                          },
-                          decoration: const InputDecoration(
-                            prefixIcon: Icon(CupertinoIcons.search),
-                            label: Text(
-                              'Search Tasks...',
+                        const SizedBox(
+                          height: 18,
+                        ),
+                        Container(
+                          height: 38,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(38 / 2),
+                            color: themeData.colorScheme.onPrimary,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                              ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: controller,
+                            onChanged: (value) {
+                              searchKeywordNotifier.value = controller.text;
+                            },
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(CupertinoIcons.search),
+                              label: Text(
+                                'Search Tasks...',
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Expanded(child: BlocBuilder<TaskListBloc, TaskListState>(
-                builder: (context, state) {
-                  if (state is TaskListSuccess) {
-                    return TaskList(items: state.items, themeData: themeData);
-                  } else if (state is TaskListEmpty) {
-                    return const EmptyState();
-                  } else if (state is TaskListLoading ||
-                      state is TaskListInitial) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (state is TaskListError) {
-                    return Center(
-                      child: Text(state.errorMessage),
-                    );
-                  } else {
-                    throw Exception('state is not valid..');
-                  }
-                },
-              ))
-            ],
+                Expanded(child: BlocBuilder<TaskListBloc, TaskListState>(
+                  builder: (context, state) {
+                    if (state is TaskListSuccess) {
+                      return TaskList(items: state.items, themeData: themeData);
+                    } else if (state is TaskListEmpty) {
+                      return const EmptyState();
+                    } else if (state is TaskListLoading ||
+                        state is TaskListInitial) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is TaskListError) {
+                      return Center(
+                        child: Text(state.errorMessage),
+                      );
+                    } else {
+                      throw Exception('state is not valid..');
+                    }
+                  },
+                ))
+              ],
+            ),
           ),
         ));
   }
