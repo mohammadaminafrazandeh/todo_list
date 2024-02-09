@@ -1,8 +1,7 @@
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_list/data/model/data.dart';
 import 'package:todo_list/repo/repository.dart';
-
 part 'task_list_event.dart';
 part 'task_list_state.dart';
 
