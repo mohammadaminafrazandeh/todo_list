@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/data/model/data.dart';
 import 'package:todo_list/main.dart';
 import 'package:todo_list/repo/repository.dart';
 import 'package:todo_list/screens/edit/edit.dart';
+import 'package:todo_list/screens/home/bloc/task_list_bloc.dart';
 import 'package:todo_list/widget/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -102,33 +104,26 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Expanded(
-                child: ValueListenableBuilder(
-                  valueListenable: searchKeywordNotifier,
-                  builder: (context, value, child) {
-                    return Consumer<Repository<TaskEntity>>(
-                        builder: (context, repository, child) {
-                      return FutureBuilder<List<TaskEntity>>(
-                          future:
-                              repository.getAll(searchKeyword: controller.text),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.data!.isNotEmpty) {
-                                return TaskList(
-                                    items: snapshot.data!,
-                                    themeData: themeData);
-                              } else {
-                                return const EmptyState();
-                              }
-                            } else {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                          });
-                    });
-                  },
-                ),
-              )
+              Expanded(child: BlocBuilder<TaskListBloc, TaskListState>(
+                builder: (context, state) {
+                  if (state is TaskListSuccess) {
+                    return TaskList(items: state.items, themeData: themeData);
+                  } else if (state is TaskListEmpty) {
+                    return const EmptyState();
+                  } else if (state is TaskListLoading ||
+                      state is TaskListInitial) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is TaskListError) {
+                    return Center(
+                      child: Text(state.errorMessage),
+                    );
+                  } else {
+                    throw Exception('state is not valid..');
+                  }
+                },
+              ))
             ],
           ),
         ));
