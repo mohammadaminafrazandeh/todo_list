@@ -2,8 +2,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_list/data/model/data.dart';
 import 'package:todo_list/main.dart';
+import 'package:todo_list/repository/repository.dart';
 
 class EditTaskScreen extends StatefulWidget {
   const EditTaskScreen({
@@ -42,14 +44,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
             ],
           ),
           onPressed: () {
+            final repository =
+                Provider.of<Repository<TaskEntity>>(context, listen: false);
             widget.task.name = _controller.text;
             widget.task.priority = widget.task.priority;
-            if (widget.task.isInBox) {
-              widget.task.save();
-            } else {
-              final Box<TaskEntity> box = Hive.box(taskBoxName);
-              box.add(widget.task);
-            }
+            repository.createOrUpdate(widget.task);
             Navigator.of(context).pop();
           }),
       body: Padding(

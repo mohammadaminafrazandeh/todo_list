@@ -3,7 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list/data/model/data.dart';
+import 'package:todo_list/data_source/hive_task_datasource.dart';
 import 'package:todo_list/home/home.dart';
+import 'package:todo_list/repository/repository.dart';
+import 'package:provider/provider.dart';
 
 const taskBoxName = 'tasks';
 void main() async {
@@ -13,7 +16,15 @@ void main() async {
   await Hive.openBox<TaskEntity>(taskBoxName);
   SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: primaryVariantColor));
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+        create: (context) => Repository<TaskEntity>(
+              HiveTaskDataSource(
+                Hive.box(taskBoxName),
+              ),
+            ),
+        child: const MyApp()),
+  );
 }
 
 const Color primaryColor = Color(0xff794cff);

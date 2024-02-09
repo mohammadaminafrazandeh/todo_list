@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:todo_list/data/model/data.dart';
 import 'package:todo_list/edit/edit.dart';
 import 'package:todo_list/main.dart';
+import 'package:todo_list/repository/repository.dart';
 import 'package:todo_list/widgets/widgets.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,7 +13,6 @@ class HomeScreen extends StatelessWidget {
   final ValueNotifier<String> searchKeywordNotifier = ValueNotifier('');
   @override
   Widget build(BuildContext context) {
-    final box = Hive.box<TaskEntity>(taskBoxName);
     final themeData = Theme.of(context);
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -106,90 +106,101 @@ class HomeScreen extends StatelessWidget {
                 child: ValueListenableBuilder(
                   valueListenable: searchKeywordNotifier,
                   builder: (context, value, child) {
-                    return ValueListenableBuilder<Box<TaskEntity>>(
-                        valueListenable: box.listenable(),
-                        builder: (context, Box<TaskEntity> box, child) {
-                          final List items;
-                          if (controller.text.isEmpty) {
-                            items = box.values.toList();
-                          } else {
-                            items = box.values
-                                .where((task) =>
-                                    task.name.contains(controller.text))
-                                .toList();
-                          }
-                          if (items.isEmpty) {
-                            return const EmptyState();
-                          } else {
-                            return ListView.builder(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                                itemCount: items.length + 1,
-                                itemBuilder: (context, index) {
-                                  if (index == 0) {
-                                    return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Today',
-                                              style: themeData
-                                                  .textTheme.titleLarge!
-                                                  .apply(fontSizeFactor: 0.9),
-                                            ),
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.only(top: 4),
-                                              width: 70,
-                                              height: 3,
-                                              decoration: BoxDecoration(
-                                                color: themeData
-                                                    .colorScheme.primary,
-                                                borderRadius:
-                                                    BorderRadius.circular(1.5),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        MaterialButton(
-                                          elevation: 0,
-                                          color: const Color(0xffEAEFF5),
-                                          textColor: secondaryTextColor,
-                                          onPressed: () {
-                                            box.clear();
-                                          },
-                                          child: const Row(
-                                            children: [
-                                              Text('Delete All'),
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-                                              Icon(
-                                                CupertinoIcons.delete_solid,
-                                                size: 18,
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    );
-                                  } else {
-                                    final TaskEntity task = items[index - 1];
-                                    return TaskItem(task: task);
-                                  }
-                                });
-                          }
-                        });
+                    return Consumer<Repository<TaskEntity>>(
+                        builder: (context, repository, child) {
+                      return FutureBuilder(
+                          future:
+                              repository.getAll(searchKeyword: controller.text),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return TaskList(
+                                  items: snapshot.data!, themeData: themeData);
+                            } else if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return const EmptyState();
+                            }
+                          });
+                    });
                   },
                 ),
               )
             ],
           ),
         ));
+  }
+}
+
+class TaskList extends StatelessWidget {
+  const TaskList({
+    super.key,
+    required this.items,
+    required this.themeData,
+  });
+
+  final List items;
+  final ThemeData themeData;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+        itemCount: items.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Today',
+                      style: themeData.textTheme.titleLarge!
+                          .apply(fontSizeFactor: 0.9),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      width: 70,
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: themeData.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(1.5),
+                      ),
+                    )
+                  ],
+                ),
+                MaterialButton(
+                  elevation: 0,
+                  color: const Color(0xffEAEFF5),
+                  textColor: secondaryTextColor,
+                  onPressed: () {
+                    Provider.of<Repository<TaskEntity>>(context, listen: false)
+                        .deleteAll();
+                  },
+                  child: const Row(
+                    children: [
+                      Text('Delete All'),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Icon(
+                        CupertinoIcons.delete_solid,
+                        size: 18,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            );
+          } else {
+            final TaskEntity task = items[index - 1];
+            return TaskItem(task: task);
+          }
+        });
   }
 }
 
