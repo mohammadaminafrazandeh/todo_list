@@ -1,39 +1,38 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:todo_list/data/data_source/data_source.dart';
+import 'package:todo_list/data_source/data_source.dart';
 
-class Repository implements DataSource {
-  DataSource localDataSource;
-  Repository({
-    required this.localDataSource,
-  });
+class Repository<T> implements DataSource<T> {
+  final DataSource<T> localDataSource;
+  Repository(
+    this.localDataSource,
+  );
 
   @override
-  createOrUpdate(item) {
+  Future<T> createOrUpdate(T item) async {
     return localDataSource.createOrUpdate(item);
   }
 
   @override
-  void delete(item) {
+  Future<void> delete(T item) async {
     localDataSource.delete(item);
   }
 
   @override
-  void deleteAll() {
+  Future<void> deleteAll() async {
     localDataSource.deleteAll();
   }
 
   @override
-  void deleteById(id) {
+  Future<void> deleteById(id) async {
     localDataSource.deleteById(id);
   }
 
   @override
-  List getAll(String searchKeyword) {
-    return localDataSource.getAll(searchKeyword);
+  Future<List<T>> getAll({String searchKeyword = ''}) async {
+    return localDataSource.getAll(searchKeyword: searchKeyword);
   }
 
   @override
-  getById(id) {
+  Future<T> getById(id) async {
     return localDataSource.getById(id);
   }
 }
