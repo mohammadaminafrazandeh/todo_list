@@ -6,6 +6,8 @@ part 'task_list_state.dart';
 
 class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   TaskListBloc() : super(TaskListInitial()) {
-    on<TaskListEvent>((event, emit) {});
+    on<TaskListEvent>((event, emit) {
+      if (event is TaskListSearch) {}
+    });
   }
 }
