@@ -4,9 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list/data/model/data.dart';
 import 'package:todo_list/data_source/hive_task_datasource.dart';
-import 'package:todo_list/home/home.dart';
 import 'package:todo_list/repository/repository.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_list/screens/home/home.dart';
 
 const taskBoxName = 'tasks';
 void main() async {

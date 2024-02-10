@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_list/data/model/data.dart';
-import 'package:todo_list/edit/edit.dart';
+import 'package:todo_list/screens/edit/edit.dart';
 import 'package:todo_list/main.dart';
 import 'package:todo_list/repository/repository.dart';
 import 'package:todo_list/widgets/widgets.dart';
