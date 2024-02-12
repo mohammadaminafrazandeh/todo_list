@@ -5,7 +5,9 @@ import 'package:todo_list/data/model/data.dart';
 import 'package:todo_list/screens/edit/edit.dart';
 import 'package:todo_list/main.dart';
 import 'package:todo_list/repository/repository.dart';
+import 'package:todo_list/screens/home/bloc/task_list_bloc.dart';
 import 'package:todo_list/widgets/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -102,32 +104,25 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              Expanded(
-                child: ValueListenableBuilder(
-                  valueListenable: searchKeywordNotifier,
-                  builder: (context, value, child) {
-                    return Consumer<Repository<TaskEntity>>(
-                        builder: (context, repository, child) {
-                      return FutureBuilder(
-                          future:
-                              repository.getAll(searchKeyword: controller.text),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return TaskList(
-                                  items: snapshot.data!, themeData: themeData);
-                            } else if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              return const EmptyState();
-                            }
-                          });
-                    });
-                  },
-                ),
-              )
+              Expanded(child: BlocBuilder<TaskListBloc, TaskListState>(
+                builder: (context, state) {
+                  if (state is TaskListSuccess) {
+                    return TaskList(items: state.tasks, themeData: themeData);
+                  } else if (state is TaskListEmpty) {
+                    return const EmptyState();
+                  } else if (state is TaskListLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    );
+                  } else if (state is TaskListError) {
+                    return Center(
+                      child: Text(state.message),
+                    );
+                  } else {
+                    throw Exception('state is not valid');
+                  }
+                },
+              ))
             ],
           ),
         ));
