@@ -12,7 +12,7 @@ import 'package:todo_list/widget/widgets.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
   final TextEditingController controller = TextEditingController();
-  final ValueNotifier<String> searchKeywordNotifier = ValueNotifier('');
+
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                           child: TextField(
                             controller: controller,
                             onChanged: (value) {
-                              searchKeywordNotifier.value = controller.text;
+                              context.read<TaskListBloc>().add(TaskListSearch(value));
                             },
                             decoration: const InputDecoration(
                               prefixIcon: Icon(CupertinoIcons.search),
@@ -107,26 +107,31 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                Expanded(child: BlocBuilder<TaskListBloc, TaskListState>(
-                  builder: (context, state) {
-                    if (state is TaskListSuccess) {
-                      return TaskList(items: state.items, themeData: themeData);
-                    } else if (state is TaskListEmpty) {
-                      return const EmptyState();
-                    } else if (state is TaskListLoading ||
-                        state is TaskListInitial) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (state is TaskListError) {
-                      return Center(
-                        child: Text(state.errorMessage),
-                      );
-                    } else {
-                      throw Exception('state is not valid..');
-                    }
-                  },
-                ))
+                Expanded(child: Consumer<Repository<TaskEntity>>(
+                    builder: (context, repository, child) {
+                  aa
+                  return BlocBuilder<TaskListBloc, TaskListState>(
+                    builder: (context, state) {
+                      if (state is TaskListSuccess) {
+                        return TaskList(
+                            items: state.items, themeData: themeData);
+                      } else if (state is TaskListEmpty) {
+                        return const EmptyState();
+                      } else if (state is TaskListLoading ||
+                          state is TaskListInitial) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (state is TaskListError) {
+                        return Center(
+                          child: Text(state.errorMessage),
+                        );
+                      } else {
+                        throw Exception('state is not valid..');
+                      }
+                    },
+                  );
+                }))
               ],
             ),
           ),
