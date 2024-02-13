@@ -93,7 +93,9 @@ class HomeScreen extends StatelessWidget {
                           child: TextField(
                             controller: controller,
                             onChanged: (value) {
-                              context.read<TaskListBloc>().add(TaskListSearch(value));
+                              context
+                                  .read<TaskListBloc>()
+                                  .add(TaskListSearch(value));
                             },
                             decoration: const InputDecoration(
                               prefixIcon: Icon(CupertinoIcons.search),
@@ -109,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 Expanded(child: Consumer<Repository<TaskEntity>>(
                     builder: (context, repository, child) {
-                  aa
+                  context.read<TaskListBloc>().add(TaskListStarted());
                   return BlocBuilder<TaskListBloc, TaskListState>(
                     builder: (context, state) {
                       if (state is TaskListSuccess) {
